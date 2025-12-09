@@ -1,15 +1,12 @@
-
-install: ## Builds using go install
-    go install ./...
-
-build: ## Builds the binary into out/johngibb/envy-go
-    go build ./... -o out/johngibb/envy-go
+build: ## Builds the binary into out/envy-go
+	go build -o bin/envy-go ./...
 
 test: ## Runs all tests
-    go test ./...
+	go test ./...
 
-run: ## Runs the application with go run
-    go run .
+modd: ## Runs modd
+	modd
 
-help:
-    @grep -E '^[0-9a-zA-Z_-]+:.*?## .*36325'  | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", 363251, 363252}'
+help: ## Show this help
+	@grep -E '^[a-zA-Z0-9_-]+:.*##' Makefile \
+		| awk 'BEGIN {FS = ":.*##"} {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
