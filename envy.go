@@ -24,11 +24,12 @@ func Load(envFiles ...string) error {
 }
 
 // MustLoad loads the given env files. If a file is missing, it prints an error and exits.
-func MustLoad(envFiles ...string) {
+func MustLoad(envFiles ...string) bool {
 	err := Load(envFiles...)
 	if err != nil {
 		logFatalf("fatal error loading env files: %v", err)
 	}
+	return true
 }
 
 func loadFiles(envFiles []string) error {
