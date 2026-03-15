@@ -3,26 +3,39 @@ package envy
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
 
+// DefaultEnvFiles are the default env files used if none are provided to Load
+// or MustLoad.
+var DefaultEnvFiles = []string{
+	".env",
+	".env.local",
+}
+
 // Load loads the given env files. Later files overwrite earlier files.
-func Load(envFiles ...string) {
-	loadFiles(envFiles, false)
+func Load(envFiles ...string) error {
+	if len(envFiles) == 0 {
+		envFiles = DefaultEnvFiles
+	}
+	return loadFiles(envFiles)
 }
 
 // MustLoad loads the given env files. If a file is missing, it prints an error and exits.
 func MustLoad(envFiles ...string) {
-	loadFiles(envFiles, true)
+	err := Load(envFiles...)
+	if err != nil {
+		logFatalf("fatal error loading env files: %v", err)
+	}
 }
 
-func loadFiles(envFiles []string, exitOnMissing bool) {
+func loadFiles(envFiles []string) error {
 	for _, f := range envFiles {
 		bytes, err := os.ReadFile(f)
-		if err != nil && (exitOnMissing || !errors.Is(err, os.ErrNotExist)) {
-			fmt.Printf("fatal: unable to read %q: %v\n", f, err)
-			exit(1)
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("error loading env file: %q: %w", f, err)
 		}
 		lines := strings.Split(string(bytes), "\n")
 		for _, line := range lines {
@@ -32,8 +45,9 @@ func loadFiles(envFiles []string, exitOnMissing bool) {
 			}
 		}
 	}
+	return nil
 }
 
-var exit = func(code int) {
-	os.Exit(code)
+var logFatalf = func(format string, v ...any) {
+	log.Fatalf(format, v...)
 }

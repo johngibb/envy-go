@@ -3,6 +3,7 @@ package envy
 import (
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -20,12 +21,13 @@ func TestLoad(t *testing.T) {
 	)
 }
 func TestMustLoad(t *testing.T) {
-	var exitCalled bool
-	exit = func(int) {
-		exitCalled = true
+	var logFatalfCalled bool
+	logFatalf = func(format string, v ...any) {
+		logFatalfCalled = true
 	}
-	MustLoad(".env.notfound")
-	assertEq(t, "exitCalled", exitCalled, true)
+	badFileName := strings.Repeat("too:long", 40)
+	MustLoad(badFileName)
+	assertEq(t, "logFatalfCalled", logFatalfCalled, true)
 }
 
 func assertEq(t *testing.T, field string, got, want any) {

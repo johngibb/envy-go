@@ -20,4 +20,5 @@ fmt.Println(os.Getenv("TEST")) // Prints "hello"
 
 **MustLoad**
 
-MustLoad fails if any files are missing.
+MustLoad calls `log.Fatal` if any files cannot be loaded. It does _not_ fail
+if they're solely missing.
