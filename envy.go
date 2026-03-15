@@ -39,10 +39,11 @@ func loadFiles(envFiles []string) error {
 		}
 		lines := strings.Split(string(bytes), "\n")
 		for _, line := range lines {
-			parts := strings.SplitN(line, "=", 2)
-			if len(parts) == 2 {
-				os.Setenv(parts[0], parts[1])
+			key, val, ok := strings.Cut(line, "=")
+			if !ok {
+				continue
 			}
+			os.Setenv(key, val)
 		}
 	}
 	return nil
